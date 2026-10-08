@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institut Naslediye // Terminal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #050608;
+            /* Gotisches Rankenmuster im Hintergrund */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(5, 6, 8, 0.45) 0%, rgba(3, 4, 5, 0.88) 100%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23636b7a' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round' opacity='0.38'%3E%3Cpath d='M70 140 C 70 100, 30 90, 30 60 C 30 35, 55 20, 70 0 C 85 20, 110 35, 110 60 C 110 90, 70 100, 70 140 Z'/%3E%3Cpath d='M70 75 C 50 65, 45 45, 55 35 C 65 25, 70 40, 70 50 C 70 40, 75 25, 85 35 C 95 45, 90 65, 70 75 Z'/%3E%3Cpath d='M30 60 C 10 60, 0 45, 10 30 C 20 18, 35 25, 30 38 C 26 48, 18 42, 20 36'/%3E%3Cpath d='M110 60 C 130 60, 140 45, 130 30 C 120 18, 105 25, 110 38 C 114 48, 122 42, 120 36'/%3E%3Cpath d='M70 110 C 45 115, 20 125, 0 140 M70 110 C 95 115, 120 125, 140 140'/%3E%3Cpath d='M0 0 C 20 15, 45 25, 70 30 M140 0 C 120 15, 95 25, 70 30'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M45 48 C 36 40, 34 28, 42 26 C 48 32, 48 42, 45 48 Z'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M95 48 C 104 40, 106 28, 98 26 C 92 32, 92 42, 95 48 Z'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M25 80 C 15 78, 10 68, 18 64 C 24 68, 26 75, 25 80 Z'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M115 80 C 125 78, 130 68, 122 64 C 116 68, 114 75, 115 80 Z'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M58 95 C 50 102, 40 100, 42 90 C 50 90, 56 94, 58 95 Z'/%3E%3Cpath fill='%23636b7a' fill-opacity='0.28' d='M82 95 C 90 102, 100 100, 98 90 C 90 90, 84 94, 82 95 Z'/%3E%3Ccircle cx='70' cy='18' r='2' fill='%23636b7a' fill-opacity='0.4'/%3E%3Ccircle cx='10' cy='30' r='1.5' fill='%23636b7a' fill-opacity='0.4'/%3E%3Ccircle cx='130' cy='30' r='1.5' fill='%23636b7a' fill-opacity='0.4'/%3E%3Cpath d='M50 78 L 44 85 M90 78 L 96 85'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+            color: #d1d5db;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .terminal-card {
+            background: rgba(10, 11, 15, 0.95);
+            border: 1px solid #2e3544;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.92), 0 0 25px rgba(46, 53, 68, 0.35);
+            width: 100%;
+            max-width: 580px;
+            padding: 30px;
+            backdrop-filter: blur(8px);
+        }
+
+        .header-title {
+            color: #f3f4f6;
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #232733;
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+        }
+
+        .header-sub {
+            color: #6b7280;
+            font-size: 0.72rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .step-container {
+            display: none;
+            animation: fadeIn 0.35s ease forwards;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .step-label {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #060709;
+            border: 1px solid #374151;
+            border-radius: 4px;
+            padding: 11px 14px;
+            margin-bottom: 16px;
+        }
+
+        .input-group:focus-within {
+            border-color: #64748b;
+            box-shadow: 0 0 10px rgba(100, 116, 139, 0.25);
+        }
+
+        .prefix {
+            color: #64748b;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: #f9fafb;
+            font-family: inherit;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #181d26;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background: #242c3b;
+            color: #ffffff;
+            border-color: #475569;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: none;
+            letter-spacing: 0.5px;
+        }
+
+        /* Verschlüsselter Cipher-Block */
+        .cipher-box {
+            background: #06070a;
+            border: 1px dashed #374151;
+            padding: 14px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            line-height: 1.7;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            user-select: none;
+            word-break: break-all;
+        }
+
+        .status-line {
+            color: #60a5fa;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* Klartext-Terminal-Box */
+        .decoded-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid #059669;
+            padding: 20px;
+            border-radius: 4px;
+            color: #e6edf3;
+            line-height: 1.7;
+            font-size: 0.88rem;
+            min-height: 120px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background-color: #10b981;
+            vertical-align: middle;
+            margin-left: 4px;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal-card">
+    <div class="header-title">Institut Naslediye // Terminal</div>
+    <div class="header-sub">Sicherheitsstufe: Classified // Krypto-Archiv</div>
+
+    <!-- SCHRITT 1: LOGIN -->
+    <div id="step-login" class="step-container active">
+        <span class="step-label">SCHRITT 1 // SUBJEKT-AUTORISIERUNG</span>
+        <div class="input-group">
+            <span class="prefix">&gt;</span>
+            <input type="text" id="login-input" placeholder="Vollständigen Namen eingeben..." autocomplete="off">
+        </div>
+        <button class="btn" id="login-btn">Verifizieren</button>
+        <div class="error-msg" id="login-error">Zugriff verweigert: Kennung nicht autorisiert.</div>
+    </div>
+
+    <!-- SCHRITT 2: KEY-GEN -->
+    <div id="step-key" class="step-container">
+        <span class="step-label">SCHRITT 2 // EINGABE KEY-GEN</span>
+        <div class="input-group">
+            <span class="prefix">&gt;</span>
+            <input type="text" id="key-input" placeholder="Key-Code eingeben..." autocomplete="off">
+        </div>
+        <button class="btn" id="key-btn">Autorisieren</button>
+        <div class="error-msg" id="key-error">Ungültiger Entschlüsselungsschlüssel.</div>
+    </div>
+
+    <!-- SCHRITT 3: PROTOKOLL-MODUS -->
+    <div id="step-mode" class="step-container">
+        <span class="step-label">SCHRITT 3 // PROTOKOLL-MODUS WÄHLEN</span>
+        <div class="input-group">
+            <span class="prefix">&gt;</span>
+            <input type="text" id="mode-input" placeholder="Modus eingeben (z. B. 300 12026)..." autocomplete="off">
+        </div>
+        <button class="btn" id="mode-btn">Initialisieren</button>
+        <div class="error-msg" id="mode-error">Unbekannter Systemmodus.</div>
+    </div>
+
+    <!-- SCHRITT 4: DECODIERUNG & ERFOLG -->
+    <div id="step-success" class="step-container">
+        <span class="step-label">// KRYPTOGRAFISCHER BLOCK GELADEN</span>
+        <div class="cipher-box" id="cipher-box">
+            7N-18-X4-09 91-M2-K8-82 30-V6-L1-01 26-P9-B3-18<br>
+            09-T5-W2-82 18-R7-S4-09 82-D0-Y8-30 01-C3-H6-26<br>
+            30-F1-Z9-18 09-A5-M7-82 26-K4-N2-01 18-X8-P0-09<br>
+            82-L3-W9-30 01-E6-B1-26 18-T4-V8-09 82-Q2-R5-18<br>
+            09-S7-C3-82 30-H0-M4-01 26-Z8-K1-18 09-D5-L7-82<br>
+            18-V2-P6-09 82-X9-M1-30 01-B4-T8-26 18-J3-W7-82
+        </div>
+
+        <div class="status-line" id="status-line">&gt; Initialisiere Decodierungsmatrix...</div>
+        
+        <div class="decoded-box">
+            <span id="typewriter-text"></span><span class="cursor" id="terminal-cursor"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const targetName = "ivy thorn";
+    const targetKey = "18091982";
+    const targetMode = "30012026";
+
+    // Zu entschlüsselnde Botschaft
+    const secretMessage = "„Nichts läuft, wie geplant. Er beschützt mich mit einer Härte, die keinen Sinn ergibt. Ich musste meine wahre Waffe noch nicht einsetzen – das Eigentum meiner Mutter bleibt im Verborgenen. Noch. Aber mein Schwur vor dem Don steht: Ich werde ihn sterben sehen. Am besten durch meine eigene Hand.“";
+
+    // Schritt 1
+    const loginInput = document.getElementById("login-input");
+    const loginBtn = document.getElementById("login-btn");
+    const loginError = document.getElementById("login-error");
+
+    function checkLogin() {
+        if (loginInput.value.trim().toLowerCase() === targetName) {
+            loginError.style.display = "none";
+            document.getElementById("step-login").classList.remove("active");
+            document.getElementById("step-key").classList.add("active");
+            document.getElementById("key-input").focus();
+        } else {
+            loginError.style.display = "block";
+        }
+    }
+
+    loginBtn.addEventListener("click", checkLogin);
+    loginInput.addEventListener("keydown", (e) => { if (e.key === "Enter") checkLogin(); });
+
+    // Schritt 2
+    const keyInput = document.getElementById("key-input");
+    const keyBtn = document.getElementById("key-btn");
+    const keyError = document.getElementById("key-error");
+
+    function checkKey() {
+        const cleanedKey = keyInput.value.replace(/\s+/g, "");
+        if (cleanedKey === targetKey) {
+            keyError.style.display = "none";
+            document.getElementById("step-key").classList.remove("active");
+            document.getElementById("step-mode").classList.add("active");
+            document.getElementById("mode-input").focus();
+        } else {
+            keyError.style.display = "block";
+        }
+    }
+
+    keyBtn.addEventListener("click", checkKey);
+    keyInput.addEventListener("keydown", (e) => { if (e.key === "Enter") checkKey(); });
+
+    // Schritt 3
+    const modeInput = document.getElementById("mode-input");
+    const modeBtn = document.getElementById("mode-btn");
+    const modeError = document.getElementById("mode-error");
+
+    function checkMode() {
+        const cleanedMode = modeInput.value.replace(/\s+/g, "");
+        if (cleanedMode === targetMode) {
+            modeError.style.display = "none";
+            document.getElementById("step-mode").classList.remove("active");
+            document.getElementById("step-success").classList.add("active");
+            startDecryptionSequence();
+        } else {
+            modeError.style.display = "block";
+        }
+    }
+
+    modeBtn.addEventListener("click", checkMode);
+    modeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") checkMode(); });
+
+    // Entschlüsselungs- & Typewriter-Animation
+    function startDecryptionSequence() {
+        const statusEl = document.getElementById("status-line");
+        const textEl = document.getElementById("typewriter-text");
+        const cursorEl = document.getElementById("terminal-cursor");
+
+        setTimeout(() => {
+            statusEl.innerText = "> Signatur verifiziert. Entschlüssele Datenpaket...";
+        }, 800);
+
+        setTimeout(() => {
+            statusEl.innerText = "> [DATENSATZ VOLLSTÄNDIG ENTSCHLÜSSELT]";
+            statusEl.style.color = "#10b981";
+
+            let i = 0;
+            const speed = 35; // Geschwindigkeit in Millisekunden pro Buchstabe
+
+            function typeWriter() {
+                if (i < secretMessage.length) {
+                    textEl.textContent += secretMessage.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    cursorEl.style.display = "none";
+                }
+            }
+
+            typeWriter();
+        }, 1800);
+    }
+</script>
+
+</body>
+</html>
